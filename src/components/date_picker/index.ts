@@ -8,7 +8,9 @@ export {
 } from './date_picker_range';
 
 export {
-  DurationRange,
+  DurationRange as EuiSuperDatePickerCommonRange,
+  DurationRange as EuiSuperDatePickerDurationRange,
+  DurationRange as EuiSuperDatePickerRecentRange,
   TimeUnitId,
   TimeUnitFromNowId,
   TimeUnitLabel,
@@ -21,5 +23,8 @@ export {
   RelativeParts,
   RelativeOption,
   QuickSelect,
-  QuickSelectPanel,
+  QuickSelectPanel as EuiSuperDatePickerQuickSelectPanel,
 } from './types';
+
+export * from './react-datepicker'; // eslint-disable-line import/no-unresolved
+export { ReactDatePickerProps } from './react-datepicker'; // eslint-disable-line import/no-unresolved
