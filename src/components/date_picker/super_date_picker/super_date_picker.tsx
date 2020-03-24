@@ -58,7 +58,7 @@ export type EuiSuperDatePickerProps = CommonProps & {
   isAutoRefreshOnly?: boolean;
   isDisabled?: boolean;
   isLoading?: boolean;
-  isPaused?: boolean;
+  isPaused: boolean;
 
   /**
    * Used to localize e.g. month names, passed to `moment`

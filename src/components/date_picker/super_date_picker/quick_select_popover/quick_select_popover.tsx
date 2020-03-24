@@ -29,7 +29,7 @@ export interface EuiQuickSelectPopoverProps {
   end: string;
   isAutoRefreshOnly?: boolean;
   isDisabled?: boolean;
-  isPaused?: boolean;
+  isPaused: boolean;
   recentlyUsedRanges?: DurationRange[];
   refreshInterval: number;
   start: string;
@@ -77,7 +77,17 @@ export class EuiQuickSelectPopover extends Component<
   };
 
   renderDateTimeSections = () => {
-    if (this.props.isAutoRefreshOnly) {
+    const {
+      commonlyUsedRanges,
+      dateFormat,
+      end,
+      isAutoRefreshOnly,
+      recentlyUsedRanges,
+      start,
+    } = this.props;
+    const { prevQuickSelect } = this.state;
+
+    if (isAutoRefreshOnly) {
       return null;
     }
 
@@ -85,19 +95,19 @@ export class EuiQuickSelectPopover extends Component<
       <Fragment>
         <EuiQuickSelect
           applyTime={this.applyTime}
-          start={this.props.start}
-          end={this.props.end}
-          prevQuickSelect={this.state.prevQuickSelect}
+          start={start}
+          end={end}
+          prevQuickSelect={prevQuickSelect}
         />
         <EuiCommonlyUsedTimeRanges
           applyTime={this.applyTime}
-          commonlyUsedRanges={this.props.commonlyUsedRanges}
+          commonlyUsedRanges={commonlyUsedRanges}
         />
         <EuiRecentlyUsed
           applyTime={this.applyTime}
-          commonlyUsedRanges={this.props.commonlyUsedRanges}
-          dateFormat={this.props.dateFormat}
-          recentlyUsedRanges={this.props.recentlyUsedRanges}
+          commonlyUsedRanges={commonlyUsedRanges}
+          dateFormat={dateFormat}
+          recentlyUsedRanges={recentlyUsedRanges}
         />
         {this.renderCustomQuickSelectPanels()}
       </Fragment>
@@ -105,11 +115,12 @@ export class EuiQuickSelectPopover extends Component<
   };
 
   renderCustomQuickSelectPanels = () => {
-    if (!this.props.customQuickSelectPanels) {
+    const { customQuickSelectPanels } = this.props;
+    if (!customQuickSelectPanels) {
       return null;
     }
 
-    return this.props.customQuickSelectPanels.map(({ title, content }) => {
+    return customQuickSelectPanels.map(({ title, content }) => {
       return (
         <Fragment key={title}>
           <EuiTitle size="xxxs">
@@ -126,6 +137,15 @@ export class EuiQuickSelectPopover extends Component<
   };
 
   render() {
+    const {
+      applyRefreshInterval,
+      isAutoRefreshOnly,
+      isDisabled,
+      isPaused,
+      refreshInterval,
+    } = this.props;
+    const { isOpen } = this.state;
+
     const quickSelectButton = (
       <EuiButtonEmpty
         className="euiFormControlLayout__prepend"
@@ -135,15 +155,9 @@ export class EuiQuickSelectPopover extends Component<
         size="xs"
         iconType="arrowDown"
         iconSide="right"
-        isDisabled={this.props.isDisabled}
+        isDisabled={isDisabled}
         data-test-subj="superDatePickerToggleQuickMenuButton">
-        <EuiIcon
-          type={
-            !this.props.isAutoRefreshOnly && this.props.isPaused
-              ? 'calendar'
-              : 'clock'
-          }
-        />
+        <EuiIcon type={!isAutoRefreshOnly && isPaused ? 'calendar' : 'clock'} />
       </EuiButtonEmpty>
     );
 
@@ -151,7 +165,7 @@ export class EuiQuickSelectPopover extends Component<
       <EuiPopover
         id="QuickSelectPopover"
         button={quickSelectButton}
-        isOpen={this.state.isOpen}
+        isOpen={isOpen}
         closePopover={this.closePopover}
         anchorPosition="downLeft"
         anchorClassName="euiQuickSelectPopover__anchor"
@@ -161,9 +175,9 @@ export class EuiQuickSelectPopover extends Component<
           data-test-subj="superDatePickerQuickMenu">
           {this.renderDateTimeSections()}
           <EuiRefreshInterval
-            applyRefreshInterval={this.props.applyRefreshInterval}
-            isPaused={this.props.isPaused}
-            refreshInterval={this.props.refreshInterval}
+            applyRefreshInterval={applyRefreshInterval}
+            isPaused={isPaused}
+            refreshInterval={refreshInterval}
           />
         </div>
       </EuiPopover>

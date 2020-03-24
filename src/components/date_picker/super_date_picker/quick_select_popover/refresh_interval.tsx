@@ -64,7 +64,7 @@ function toMilliseconds(units: TimeUnitId, value: Milliseconds) {
 
 export interface EuiRefreshIntervalProps {
   applyRefreshInterval?: ApplyRefreshInterval;
-  isPaused?: boolean;
+  isPaused: boolean;
   refreshInterval: Milliseconds;
 }
 
