@@ -88,10 +88,8 @@ export function prettyDuration(
         ? timeUnitsPlural[countTimeUnit]
         : timeUnits[countTimeUnit];
     let text = `${timeTense} ${relativeParts.count} ${countTimeUnitFullName}`;
-    if (relativeParts.round) {
-      if (relativeParts.roundUnit) {
-        text += ` rounded to the ${timeUnits[relativeParts.roundUnit]}`;
-      }
+    if (relativeParts.round && relativeParts.roundUnit) {
+      text += ` rounded to the ${timeUnits[relativeParts.roundUnit]}`;
     }
     return text;
   }
