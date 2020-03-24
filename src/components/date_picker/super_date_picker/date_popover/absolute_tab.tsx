@@ -14,7 +14,7 @@ export interface EuiAbsoluteTabProps {
   timeFormat: string;
   locale?: LocaleSpecifier;
   value: string;
-  onChange: ReactDatePickerProps['onChange'];
+  onChange: NonNullable<ReactDatePickerProps['onChange']>;
   roundUp: boolean;
   position: 'start' | 'end';
 }
@@ -58,9 +58,6 @@ export class EuiAbsoluteTab extends Component<
     if (date === null) {
       return;
     }
-    if (!onChange) {
-      return;
-    }
     const dateMoment = moment(date);
     onChange(date, event);
     this.setState({
@@ -78,7 +75,7 @@ export class EuiAbsoluteTab extends Component<
       true
     );
     const dateIsValid = valueAsMoment.isValid();
-    if (dateIsValid && onChange) {
+    if (dateIsValid) {
       onChange(valueAsMoment, event);
     }
     this.setState({

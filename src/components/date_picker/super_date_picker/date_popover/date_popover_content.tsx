@@ -18,7 +18,7 @@ import { ReactDatePickerProps } from '../../react-datepicker'; // eslint-disable
 
 export interface EuiDatePopoverContentProps {
   value: string;
-  onChange: ReactDatePickerProps['onChange'];
+  onChange: NonNullable<ReactDatePickerProps['onChange']>;
   roundUp?: boolean;
   dateFormat: string;
   timeFormat: string;
@@ -38,10 +38,6 @@ export const EuiDatePopoverContent: FunctionComponent<
   position,
 }) => {
   const onTabClick: EuiTabbedContentProps['onTabClick'] = selectedTab => {
-    if (!onChange) {
-      return;
-    }
-
     switch (selectedTab.id) {
       case DATE_MODES.ABSOLUTE:
         onChange(toAbsoluteString(value, roundUp));
@@ -104,9 +100,7 @@ export const EuiDatePopoverContent: FunctionComponent<
             <EuiButton
               data-test-subj="superDatePickerNowButton"
               onClick={() => {
-                if (onChange) {
-                  onChange('now');
-                }
+                onChange('now');
               }}
               fullWidth
               size="s"

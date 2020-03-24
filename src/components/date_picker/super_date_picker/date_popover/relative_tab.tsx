@@ -31,7 +31,7 @@ export interface EuiRelativeTabProps {
   dateFormat: string;
   locale?: LocaleSpecifier;
   value: string;
-  onChange: ReactDatePickerProps['onChange'];
+  onChange: NonNullable<ReactDatePickerProps['onChange']>;
   roundUp?: boolean;
   position: 'start' | 'end';
 }
@@ -85,9 +85,6 @@ export class EuiRelativeTab extends Component<
     const { count, round, roundUnit, unit } = this.state;
     const { onChange } = this.props;
     if (count === null || count < 0) {
-      return;
-    }
-    if (!onChange) {
       return;
     }
     const date = toRelativeStringFromParts({
