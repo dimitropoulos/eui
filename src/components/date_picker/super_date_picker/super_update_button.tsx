@@ -32,7 +32,7 @@ export class EuiSuperUpdateButton extends Component<EuiSuperUpdateButtonProps> {
   };
 
   _isMounted = false;
-  tooltipTimeout: NodeJS.Timer | undefined;
+  tooltipTimeout: number | undefined;
   tooltip: EuiToolTip | null = null;
 
   componentWillUnmount() {
@@ -51,9 +51,9 @@ export class EuiSuperUpdateButton extends Component<EuiSuperUpdateButtonProps> {
       !this.props.isLoading
     ) {
       this.showTooltip();
-      this.tooltipTimeout = setTimeout(() => {
+      this.tooltipTimeout = (setTimeout(() => {
         this.hideTooltip();
-      }, 2000);
+      }, 2000) as unknown) as (number | undefined);
     }
   }
 
