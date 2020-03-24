@@ -107,7 +107,9 @@ exports[`EuiQuickSelect is rendered 1`] = `
     margin="s"
   />
   <EuiScreenReaderOnly>
-    <p>
+    <p
+      id="htmlId"
+    >
       <EuiI18n
         default="Currently set to {timeTense} {timeValue} {timeUnit}."
         token="euiQuickSelect.fullDescription"
@@ -231,7 +233,9 @@ exports[`EuiQuickSelect prevQuickSelect 1`] = `
     margin="s"
   />
   <EuiScreenReaderOnly>
-    <p>
+    <p
+      id="htmlId"
+    >
       <EuiI18n
         default="Currently set to {timeTense} {timeValue} {timeUnit}."
         token="euiQuickSelect.fullDescription"

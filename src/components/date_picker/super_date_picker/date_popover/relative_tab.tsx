@@ -189,7 +189,7 @@ export class EuiRelativeTab extends Component<
           }
         />
         <EuiScreenReaderOnly>
-          <p>
+          <p id={relativeDateInputNumberDescriptionId}>
             <EuiI18n
               token="euiRelativeTab.fullDescription"
               default="The unit is changeable. Currently set to {unit}."

@@ -215,7 +215,7 @@ export class EuiRefreshInterval extends Component<
           </EuiFlexItem>
         </EuiFlexGroup>
         <EuiScreenReaderOnly>
-          <p>
+          <p id={refreshSelectionId}>
             <EuiI18n
               token="euiRefreshInterval.fullDescription"
               default="Currently set to {optionValue} {optionText}."

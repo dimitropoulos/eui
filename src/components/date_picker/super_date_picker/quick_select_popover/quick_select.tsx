@@ -287,7 +287,7 @@ export class EuiQuickSelect extends Component<
         </EuiFlexGroup>
         <EuiHorizontalRule margin="s" />
         <EuiScreenReaderOnly>
-          <p>
+          <p id={timeSelectionId}>
             <EuiI18n
               token="euiQuickSelect.fullDescription"
               default="Currently set to {timeTense} {timeValue} {timeUnit}."
