@@ -55,8 +55,8 @@ export type EuiSuperDatePickerProps = CommonProps & {
   /**
    * Set isAutoRefreshOnly to true to limit the component to only display auto refresh content.
    */
-  isAutoRefreshOnly?: boolean;
-  isDisabled?: boolean;
+  isAutoRefreshOnly: boolean;
+  isDisabled: boolean;
   isLoading?: boolean;
   isPaused: boolean;
 
@@ -83,7 +83,7 @@ export type EuiSuperDatePickerProps = CommonProps & {
    * Callback for when the time changes.
    */
   onTimeChange: (props: OnTimeChangeProps) => void;
-  recentlyUsedRanges?: DurationRange[];
+  recentlyUsedRanges: DurationRange[];
 
   /**
    * Refresh interval in milliseconds
@@ -93,7 +93,7 @@ export type EuiSuperDatePickerProps = CommonProps & {
   /**
    * Set showUpdateButton to false to immediately invoke onTimeChange for all start and end changes.
    */
-  showUpdateButton?: boolean;
+  showUpdateButton: boolean;
   start: ShortDate;
 
   /**
@@ -143,17 +143,17 @@ export class EuiSuperDatePicker extends Component<
   EuiSuperDatePickerState
 > {
   static defaultProps = {
-    start: 'now-15m',
-    end: 'now',
-    isPaused: true,
-    isDisabled: false,
-    refreshInterval: 0,
     commonlyUsedRanges: commonDurationRanges,
     dateFormat: 'MMM D, YYYY @ HH:mm:ss.SSS',
-    timeFormat: 'HH:mm',
-    recentlyUsedRanges: [],
-    showUpdateButton: true,
+    end: 'now',
     isAutoRefreshOnly: false,
+    isDisabled: false,
+    isPaused: true,
+    recentlyUsedRanges: [],
+    refreshInterval: 0,
+    showUpdateButton: true,
+    start: 'now-15m',
+    timeFormat: 'HH:mm',
   };
 
   asyncInterval?: AsyncInterval;

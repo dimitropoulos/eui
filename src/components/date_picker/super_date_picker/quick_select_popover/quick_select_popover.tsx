@@ -27,10 +27,10 @@ export interface EuiQuickSelectPopoverProps {
   customQuickSelectPanels?: QuickSelectPanel[];
   dateFormat: string;
   end: string;
-  isAutoRefreshOnly?: boolean;
-  isDisabled?: boolean;
+  isAutoRefreshOnly: boolean;
+  isDisabled: boolean;
   isPaused: boolean;
-  recentlyUsedRanges?: DurationRange[];
+  recentlyUsedRanges: DurationRange[];
   refreshInterval: number;
   start: string;
 }
