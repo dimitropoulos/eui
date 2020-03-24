@@ -106,9 +106,7 @@ exports[`EuiQuickSelect is rendered 1`] = `
   <EuiHorizontalRule
     margin="s"
   />
-  <EuiScreenReaderOnly
-    id="htmlId"
-  >
+  <EuiScreenReaderOnly>
     <p>
       <EuiI18n
         default="Currently set to {timeTense} {timeValue} {timeUnit}."
@@ -232,9 +230,7 @@ exports[`EuiQuickSelect prevQuickSelect 1`] = `
   <EuiHorizontalRule
     margin="s"
   />
-  <EuiScreenReaderOnly
-    id="htmlId"
-  >
+  <EuiScreenReaderOnly>
     <p>
       <EuiI18n
         default="Currently set to {timeTense} {timeValue} {timeUnit}."

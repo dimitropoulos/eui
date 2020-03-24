@@ -1,6 +1,4 @@
-import PropTypes from 'prop-types';
-import React, { Fragment } from 'react';
-import { commonlyUsedRangeShape, recentlyUsedRangeShape } from '../types';
+import React, { Fragment, FunctionComponent } from 'react';
 import { prettyDuration } from '../pretty_duration';
 
 import { EuiFlexGroup, EuiFlexItem } from '../../../flex';
@@ -9,13 +7,21 @@ import { EuiSpacer } from '../../../spacer';
 import { EuiLink } from '../../../link';
 import { EuiText } from '../../../text';
 import { EuiHorizontalRule } from '../../../horizontal_rule';
+import { DurationRange, ApplyTime } from '../../types';
 
-export function EuiRecentlyUsed({
+export interface EuiRecentlyUsedProps {
+  applyTime: ApplyTime;
+  commonlyUsedRanges: DurationRange[];
+  dateFormat: string;
+  recentlyUsedRanges?: DurationRange[];
+}
+
+export const EuiRecentlyUsed: FunctionComponent<EuiRecentlyUsedProps> = ({
   applyTime,
   commonlyUsedRanges,
   dateFormat,
-  recentlyUsedRanges,
-}) {
+  recentlyUsedRanges = [],
+}) => {
   if (recentlyUsedRanges.length === 0) {
     return null;
   }
@@ -47,15 +53,6 @@ export function EuiRecentlyUsed({
       <EuiHorizontalRule margin="s" />
     </Fragment>
   );
-}
-
-EuiRecentlyUsed.propTypes = {
-  applyTime: PropTypes.func.isRequired,
-  commonlyUsedRanges: PropTypes.arrayOf(commonlyUsedRangeShape).isRequired,
-  dateFormat: PropTypes.string.isRequired,
-  recentlyUsedRanges: PropTypes.arrayOf(recentlyUsedRangeShape),
 };
 
-EuiRecentlyUsed.defaultProps = {
-  recentlyUsedRanges: [],
-};
+EuiRecentlyUsed.displayName = 'EuiRecentlyUsed';

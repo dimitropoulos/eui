@@ -1,22 +1,93 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, MouseEventHandler, RefCallback } from 'react';
 import classNames from 'classnames';
 
-import moment from 'moment';
-import { ReactDatePicker as DatePicker } from '../../../packages';
+import { Moment } from 'moment'; // eslint-disable-line import/named
 
-import { EuiFormControlLayout } from '../form/form_control_layout';
-
-import { EuiValidatableControl } from '../form/validatable_control';
+import { EuiFormControlLayout, EuiValidatableControl } from '../form';
+import { EuiFormControlLayoutIconsProps } from '../form/form_control_layout/form_control_layout_icons';
 
 import { EuiErrorBoundary } from '../error_boundary';
 
 import { EuiI18nConsumer } from '../context';
+import { CommonProps } from '../common';
+
+// @ts-ignore the type is provided by react-datepicker.d.ts
+import { ReactDatePicker as _ReactDatePicker } from '../../../packages';
+import ReactDatePicker, { ReactDatePickerProps } from './react-datepicker'; // eslint-disable-line import/no-unresolved
 
 export const euiDatePickerDefaultDateFormat = 'MM/DD/YYYY';
 export const euiDatePickerDefaultTimeFormat = 'hh:mm A';
 
-export class EuiDatePicker extends Component {
+const DatePicker = _ReactDatePicker as typeof ReactDatePicker;
+
+interface EuiExtendedDatePickerProps extends ReactDatePickerProps {
+  /**
+   * Applies classes to the numbered days provided. Check docs for example.
+   */
+  dayClassName?: (date: Moment) => string | null;
+
+  /**
+   * Makes the input full width
+   */
+  fullWidth?: boolean;
+
+  /**
+   * Applies ref to the input
+   */
+  inputRef: RefCallback<Component<ReactDatePickerProps, any, any>>;
+
+  /**
+   * Provides styling to the input when invalid
+   */
+  isInvalid?: boolean;
+
+  /**
+   * Provides styling to the input when loading
+   */
+  isLoading?: boolean;
+
+  /**
+   * What to do when the input is cleared by the x icon
+   */
+  onClear?: MouseEventHandler<HTMLButtonElement>;
+
+  /**
+   * Opens to this date (in moment format) on first press, regardless of selection
+   */
+  openToDate?: Moment;
+
+  /**
+   * Shows only when no date is selected
+   */
+  placeholder?: string;
+
+  /**
+   * Can turn the shadow off if using the inline prop
+   */
+  shadow?: boolean;
+
+  /**
+   * Show the icon in input
+   */
+  showIcon?: boolean;
+}
+
+export type EuiDatePickerProps = CommonProps & EuiExtendedDatePickerProps;
+
+export class EuiDatePicker extends Component<EuiDatePickerProps> {
+  static defaultProps = {
+    adjustDateOnChange: true,
+    dateFormat: euiDatePickerDefaultDateFormat,
+    fullWidth: false,
+    inputRef: () => {},
+    isLoading: false,
+    shadow: true,
+    shouldCloseOnSelect: true,
+    showIcon: true,
+    showTimeSelect: false,
+    timeFormat: euiDatePickerDefaultTimeFormat,
+  };
+
   render() {
     const {
       adjustDateOnChange,
@@ -27,7 +98,7 @@ export class EuiDatePicker extends Component {
       dayClassName,
       disabled,
       excludeDates,
-      filterDates,
+      filterDate,
       fullWidth,
       injectTimes,
       inline,
@@ -72,9 +143,9 @@ export class EuiDatePicker extends Component {
       className
     );
 
-    let optionalIcon;
+    let optionalIcon: EuiFormControlLayoutIconsProps['icon'];
     if (inline || customInput || !showIcon) {
-      optionalIcon = null;
+      optionalIcon = undefined;
     } else if (showTimeSelectOnly) {
       optionalIcon = 'clock';
     } else {
@@ -130,7 +201,7 @@ export class EuiDatePicker extends Component {
           <EuiFormControlLayout
             icon={optionalIcon}
             fullWidth={fullWidth}
-            clear={selected && onClear ? { onClick: onClear } : null}
+            clear={selected && onClear ? { onClick: onClear } : undefined}
             isLoading={isLoading}>
             <EuiValidatableControl isInvalid={isInvalid}>
               <EuiI18nConsumer>
@@ -145,7 +216,7 @@ export class EuiDatePicker extends Component {
                       dayClassName={dayClassName}
                       disabled={disabled}
                       excludeDates={excludeDates}
-                      filterDates={filterDates}
+                      filterDate={filterDate}
                       injectTimes={injectTimes}
                       inline={inline}
                       locale={locale || contextLocale}
@@ -167,7 +238,7 @@ export class EuiDatePicker extends Component {
                       timeFormat={timeFormat}
                       utcOffset={utcOffset}
                       yearDropdownItemNumber={7}
-                      accessibleMode={true}
+                      accessibleMode
                       {...rest}
                     />
                   );
@@ -180,136 +251,3 @@ export class EuiDatePicker extends Component {
     );
   }
 }
-
-EuiDatePicker.propTypes = {
-  /**
-   * Whether changes to Year and Month (via dropdowns) should trigger `onChange`
-   */
-  adjustDateOnChange: PropTypes.bool,
-  /**
-   * Optional class added to the calendar portion of datepicker
-   */
-  calendarClassName: PropTypes.string,
-
-  /**
-   * Added to the actual input of the calendar
-   */
-  className: PropTypes.string,
-  /**
-   * Replaces the input with any node, like a button
-   */
-  customInput: PropTypes.node,
-  /**
-   * Accepts any moment format string
-   */
-  dateFormat: PropTypes.string,
-  /**
-   * Applies classes to the numbered days provided. Check docs for example.
-   */
-  dayClassName: PropTypes.func,
-
-  /**
-   * Array of dates allowed. Check docs for example.
-   */
-  filterDates: PropTypes.array,
-  /**
-   * Makes the input full width
-   */
-  fullWidth: PropTypes.bool,
-  /**
-   * Adds additional times to the time selector other then :30 increments
-   */
-  injectTimes: PropTypes.array,
-  /**
-   * Applies ref to the input
-   */
-  inputRef: PropTypes.func,
-  /**
-   * Provides styling to the input when invalid
-   */
-  isInvalid: PropTypes.bool,
-  /**
-   * Provides styling to the input when loading
-   */
-  isLoading: PropTypes.bool,
-  /**
-   * Switches the locale / display. "en-us", "zn-ch"...etc
-   */
-  locale: PropTypes.string,
-  /**
-   * The max date accepted (in moment format) as a selection
-   */
-  maxDate: PropTypes.instanceOf(moment),
-  /**
-   * The max time accepted (in moment format) as a selection
-   */
-  maxTime: PropTypes.instanceOf(moment),
-  /**
-   * The min date accepted (in moment format) as a selection
-   */
-  minDate: PropTypes.instanceOf(moment),
-  /**
-   * The min time accepted (in moment format) as a selection
-   */
-  minTime: PropTypes.instanceOf(moment),
-  /**
-   * What to do when the input changes
-   */
-  onChange: PropTypes.func,
-  /**
-   * What to do when the input is cleared by the x icon
-   */
-  onClear: PropTypes.func,
-  /**
-   * Opens to this date (in moment format) on first press, regardless of selection
-   */
-  openToDate: PropTypes.instanceOf(moment),
-  /**
-   * Shows only when no date is selected
-   */
-  placeholder: PropTypes.string,
-  /**
-   * Class applied to the popup, when inline is false
-   */
-  popperClassName: PropTypes.string,
-  /**
-   * The selected datetime (in moment format)
-   */
-  selected: PropTypes.instanceOf(moment),
-  /**
-   * Can turn the shadow off if using the inline prop
-   */
-  shadow: PropTypes.bool,
-  /**
-   * Will close the popup on selection
-   */
-  shouldCloseOnSelect: PropTypes.bool,
-  /**
-   * Show the icon in input
-   */
-  showIcon: PropTypes.bool,
-  /**
-   * Show the time selection alongside the calendar
-   */
-  showTimeSelect: PropTypes.bool,
-  /**
-   * Only show the time selector, not the calendar
-   */
-  showTimeSelectOnly: PropTypes.bool,
-  /**
-   * The format of the time within the selector, in moment notation
-   */
-  timeFormat: PropTypes.string,
-};
-
-EuiDatePicker.defaultProps = {
-  adjustDateOnChange: true,
-  dateFormat: euiDatePickerDefaultDateFormat,
-  fullWidth: false,
-  isLoading: false,
-  shadow: true,
-  shouldCloseOnSelect: true,
-  showIcon: true,
-  showTimeSelect: false,
-  timeFormat: euiDatePickerDefaultTimeFormat,
-};

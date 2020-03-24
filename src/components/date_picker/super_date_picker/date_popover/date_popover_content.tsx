@@ -1,7 +1,6 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 
-import { EuiTabbedContent } from '../../../tabs';
+import { EuiTabbedContent, EuiTabbedContentProps } from '../../../tabs';
 import { EuiText } from '../../../text';
 import { EuiButton } from '../../../button';
 
@@ -14,17 +13,35 @@ import {
   toAbsoluteString,
   toRelativeString,
 } from '../date_modes';
+import { LocaleSpecifier } from 'moment'; // eslint-disable-line import/named
+import { ReactDatePickerProps } from '../../react-datepicker'; // eslint-disable-line import/no-unresolved
 
-export function EuiDatePopoverContent({
+export interface EuiDatePopoverContentProps {
+  value: string;
+  onChange: ReactDatePickerProps['onChange'];
+  roundUp?: boolean;
+  dateFormat: string;
+  timeFormat: string;
+  locale?: LocaleSpecifier;
+  position: 'start' | 'end';
+}
+
+export const EuiDatePopoverContent: FunctionComponent<
+  EuiDatePopoverContentProps
+> = ({
   value,
-  roundUp,
+  roundUp = false,
   onChange,
   dateFormat,
   timeFormat,
   locale,
   position,
-}) {
-  const onTabClick = selectedTab => {
+}) => {
+  const onTabClick: EuiTabbedContentProps['onTabClick'] = selectedTab => {
+    if (!onChange) {
+      return;
+    }
+
     switch (selectedTab.id) {
       case DATE_MODES.ABSOLUTE:
         onChange(toAbsoluteString(value, roundUp));
@@ -86,7 +103,11 @@ export function EuiDatePopoverContent({
             </p>
             <EuiButton
               data-test-subj="superDatePickerNowButton"
-              onClick={() => onChange('now')}
+              onClick={() => {
+                if (onChange) {
+                  onChange('now');
+                }
+              }}
               fullWidth
               size="s"
               fill>
@@ -105,24 +126,16 @@ export function EuiDatePopoverContent({
       className="euiDatePopoverContent"
       tabs={renderTabs()}
       autoFocus="selected"
-      initialSelectedTab={{ id: getDateMode(value) }}
+      initialSelectedTab={{
+        content: <span />,
+        id: getDateMode(value),
+        name: '',
+      }}
       onTabClick={onTabClick}
       size="s"
       expand
     />
   );
-}
-
-EuiDatePopoverContent.propTypes = {
-  value: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  roundUp: PropTypes.bool,
-  dateFormat: PropTypes.string.isRequired,
-  timeFormat: PropTypes.string.isRequired,
-  locale: PropTypes.string,
-  position: PropTypes.oneOf(['start', 'end']),
 };
 
-EuiDatePopoverContent.defaultProps = {
-  roundUp: false,
-};
+EuiDatePopoverContent.displayName = 'EuiDatePopoverContent';

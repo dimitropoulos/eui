@@ -1,5 +1,8 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {
+  Component,
+  ChangeEventHandler,
+  KeyboardEventHandler,
+} from 'react';
 import moment from 'moment';
 import dateMath from '@elastic/datemath';
 import { htmlIdGenerator } from '../../../../services';
@@ -12,6 +15,8 @@ import { EuiHorizontalRule } from '../../../horizontal_rule';
 import { EuiI18n } from '../../../i18n';
 import { timeUnits } from '../time_units';
 import { EuiScreenReaderOnly } from '../../../accessibility';
+import { ApplyTime, QuickSelect, TimeUnitId } from '../../types';
+import { keysOf } from '../../../common';
 
 const LAST = 'last';
 const NEXT = 'next';
@@ -20,45 +25,73 @@ const timeTenseOptions = [
   { value: LAST, text: 'Last' },
   { value: NEXT, text: 'Next' },
 ];
-const timeUnitsOptions = Object.keys(timeUnits).map(key => {
+const timeUnitsOptions = keysOf(timeUnits).map(key => {
   return { value: key, text: `${timeUnits[key]}s` };
 });
 
-export class EuiQuickSelect extends Component {
-  constructor(props) {
-    super(props);
+const defaultQuickSelect: QuickSelect = {
+  timeTense: LAST,
+  timeValue: 15,
+  timeUnits: 'm',
+};
 
-    const { timeTense, timeValue, timeUnits } = this.props.prevQuickSelect;
-    this.state = {
-      timeTense: timeTense ? timeTense : LAST,
-      timeValue: timeValue ? timeValue : 15,
-      timeUnits: timeUnits ? timeUnits : 'm',
-    };
-  }
+type EuiQuickSelectState = QuickSelect;
+
+export interface EuiQuickSelectProps {
+  applyTime: ApplyTime;
+  start: string;
+  end: string;
+  prevQuickSelect: EuiQuickSelectState;
+}
+
+export class EuiQuickSelect extends Component<
+  EuiQuickSelectProps,
+  EuiQuickSelectState
+> {
+  static defaultProps = {
+    prevQuickSelect: defaultQuickSelect,
+  };
+
+  state: EuiQuickSelectState = {
+    timeTense:
+      this.props.prevQuickSelect && this.props.prevQuickSelect.timeTense
+        ? this.props.prevQuickSelect.timeTense
+        : defaultQuickSelect.timeTense,
+    timeValue:
+      this.props.prevQuickSelect && this.props.prevQuickSelect.timeValue
+        ? this.props.prevQuickSelect.timeValue
+        : defaultQuickSelect.timeValue,
+    timeUnits:
+      this.props.prevQuickSelect && this.props.prevQuickSelect.timeUnits
+        ? this.props.prevQuickSelect.timeUnits
+        : defaultQuickSelect.timeUnits,
+  };
 
   generateId = htmlIdGenerator();
 
-  onTimeTenseChange = evt => {
+  onTimeTenseChange: ChangeEventHandler<HTMLSelectElement> = event => {
     this.setState({
-      timeTense: evt.target.value,
+      timeTense: event.target.value,
     });
   };
 
-  onTimeValueChange = evt => {
-    const sanitizedValue = parseInt(evt.target.value, 10);
+  onTimeValueChange: ChangeEventHandler<HTMLInputElement> = event => {
+    const sanitizedValue = parseInt(event.target.value, 10);
     this.setState({
-      timeValue: isNaN(sanitizedValue) ? '' : sanitizedValue,
+      timeValue: isNaN(sanitizedValue) ? 0 : sanitizedValue,
     });
   };
 
-  onTimeUnitsChange = evt => {
+  onTimeUnitsChange: ChangeEventHandler<HTMLSelectElement> = event => {
     this.setState({
-      timeUnits: evt.target.value,
+      timeUnits: event.target.value as TimeUnitId,
     });
   };
 
-  handleKeyDown = ({ key }) => {
-    if (key === 'Enter') this.applyQuickSelect();
+  handleKeyDown: KeyboardEventHandler<HTMLElement> = ({ key }) => {
+    if (key === 'Enter') {
+      this.applyQuickSelect();
+    }
   };
 
   applyQuickSelect = () => {
@@ -124,13 +157,17 @@ export class EuiQuickSelect extends Component {
     const { timeTense, timeValue, timeUnits } = this.state;
     const timeSelectionId = this.generateId();
     const legendId = this.generateId();
+    const matchedTimeUnit = timeUnitsOptions.find(
+      ({ value }) => value === timeUnits
+    );
+    const timeUnit = matchedTimeUnit ? matchedTimeUnit.text : '';
 
     return (
       <fieldset>
         <EuiI18n
           token="euiQuickSelect.legendText"
           default="Quick select a time range">
-          {legendText => (
+          {(legendText: string) => (
             // Legend needs to be the first thing in a fieldset, but we want the visible title within the flex.
             // So we hide it, but allow screen readers to see it
             <EuiScreenReaderOnly>
@@ -149,7 +186,7 @@ export class EuiQuickSelect extends Component {
             <EuiI18n
               token="euiQuickSelect.quickSelectTitle"
               default="Quick select">
-              {quickSelectTitle => (
+              {(quickSelectTitle: string) => (
                 <div aria-hidden className="euiFormLabel">
                   {quickSelectTitle}
                 </div>
@@ -162,7 +199,7 @@ export class EuiQuickSelect extends Component {
                 <EuiI18n
                   token="euiQuickSelect.previousLabel"
                   default="Previous time window">
-                  {previousLabel => (
+                  {(previousLabel: string) => (
                     <EuiToolTip content={previousLabel}>
                       <EuiButtonIcon
                         aria-label={previousLabel}
@@ -177,7 +214,7 @@ export class EuiQuickSelect extends Component {
                 <EuiI18n
                   token="euiQuickSelect.nextLabel"
                   default="Next time window">
-                  {nextLabel => (
+                  {(nextLabel: string) => (
                     <EuiToolTip content={nextLabel}>
                       <EuiButtonIcon
                         aria-label={nextLabel}
@@ -195,7 +232,7 @@ export class EuiQuickSelect extends Component {
         <EuiFlexGroup gutterSize="s" responsive={false}>
           <EuiFlexItem>
             <EuiI18n token="euiQuickSelect.tenseLabel" default="Time tense">
-              {tenseLabel => (
+              {(tenseLabel: string) => (
                 <EuiSelect
                   compressed
                   onKeyDown={this.handleKeyDown}
@@ -210,7 +247,7 @@ export class EuiQuickSelect extends Component {
           </EuiFlexItem>
           <EuiFlexItem>
             <EuiI18n token="euiQuickSelect.valueLabel" default="Time value">
-              {valueLabel => (
+              {(valueLabel: string) => (
                 <EuiFieldNumber
                   compressed
                   onKeyDown={this.handleKeyDown}
@@ -224,7 +261,7 @@ export class EuiQuickSelect extends Component {
           </EuiFlexItem>
           <EuiFlexItem>
             <EuiI18n token="euiQuickSelect.unitLabel" default="Time unit">
-              {unitLabel => (
+              {(unitLabel: string) => (
                 <EuiSelect
                   compressed
                   onKeyDown={this.handleKeyDown}
@@ -243,13 +280,13 @@ export class EuiQuickSelect extends Component {
               className="euiQuickSelect__applyButton"
               size="s"
               onClick={this.applyQuickSelect}
-              disabled={timeValue === '' || timeValue <= 0}>
+              disabled={timeValue <= 0}>
               <EuiI18n token="euiQuickSelect.applyButton" default="Apply" />
             </EuiButton>
           </EuiFlexItem>
         </EuiFlexGroup>
         <EuiHorizontalRule margin="s" />
-        <EuiScreenReaderOnly id={timeSelectionId}>
+        <EuiScreenReaderOnly>
           <p>
             <EuiI18n
               token="euiQuickSelect.fullDescription"
@@ -257,9 +294,7 @@ export class EuiQuickSelect extends Component {
               values={{
                 timeTense,
                 timeValue,
-                timeUnit: timeUnitsOptions.find(
-                  option => option.value === timeUnits
-                ).text,
+                timeUnit,
               }}
             />
           </p>
@@ -268,14 +303,3 @@ export class EuiQuickSelect extends Component {
     );
   }
 }
-
-EuiQuickSelect.propTypes = {
-  applyTime: PropTypes.func.isRequired,
-  start: PropTypes.string.isRequired,
-  end: PropTypes.string.isRequired,
-  prevQuickSelect: PropTypes.object,
-};
-
-EuiQuickSelect.defaultProps = {
-  prevQuickSelect: {},
-};

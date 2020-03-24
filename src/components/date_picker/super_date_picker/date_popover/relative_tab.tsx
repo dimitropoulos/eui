@@ -1,5 +1,4 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, ChangeEventHandler } from 'react';
 import dateMath from '@elastic/datemath';
 import { toSentenceCase } from '../../../../services/string/to_case';
 import { htmlIdGenerator } from '../../../../services';
@@ -12,6 +11,7 @@ import {
   EuiFieldText,
   EuiSwitch,
   EuiFormLabel,
+  EuiSwitchEvent,
 } from '../../../form';
 import { EuiSpacer } from '../../../spacer';
 
@@ -23,58 +23,86 @@ import {
 } from '../relative_utils';
 import { EuiScreenReaderOnly } from '../../../accessibility';
 import { EuiI18n } from '../../../i18n';
+import { RelativeParts, TimeUnitId } from '../../types';
+import { LocaleSpecifier } from 'moment'; // eslint-disable-line import/named
+import { ReactDatePickerProps } from '../../react-datepicker'; // eslint-disable-line import/no-unresolved
 
-export class EuiRelativeTab extends Component {
-  constructor(props) {
-    super(props);
-    const sentenceCasedPosition = toSentenceCase(props.position);
+export interface EuiRelativeTabProps {
+  dateFormat: string;
+  locale?: LocaleSpecifier;
+  value: string;
+  onChange: ReactDatePickerProps['onChange'];
+  roundUp?: boolean;
+  position: 'start' | 'end';
+}
 
-    this.state = {
-      ...parseRelativeParts(this.props.value),
-      sentenceCasedPosition,
-    };
-  }
+interface EuiRelativeTabState
+  extends Pick<RelativeParts, 'unit' | 'round' | 'roundUnit'> {
+  count: number | null;
+  sentenceCasedPosition: string;
+}
+
+export class EuiRelativeTab extends Component<
+  EuiRelativeTabProps,
+  EuiRelativeTabState
+> {
+  state: EuiRelativeTabState = {
+    ...parseRelativeParts(this.props.value),
+    sentenceCasedPosition: toSentenceCase(this.props.position),
+  };
 
   generateId = htmlIdGenerator();
 
-  onCountChange = evt => {
-    const sanitizedValue = parseInt(evt.target.value, 10);
+  onCountChange: ChangeEventHandler<HTMLInputElement> = event => {
+    const sanitizedValue = parseInt(event.target.value, 10);
     this.setState(
       {
-        count: isNaN(sanitizedValue) ? '' : sanitizedValue,
+        count: isNaN(sanitizedValue) ? null : sanitizedValue,
       },
       this.handleChange
     );
   };
 
-  onUnitChange = evt => {
+  onUnitChange: ChangeEventHandler<HTMLSelectElement> = event => {
     this.setState(
       {
-        unit: evt.target.value,
+        unit: event.target.value,
       },
       this.handleChange
     );
   };
 
-  onRoundChange = evt => {
+  onRoundChange = (event: EuiSwitchEvent) => {
     this.setState(
       {
-        round: evt.target.checked,
+        round: event.target.checked,
       },
       this.handleChange
     );
   };
 
   handleChange = () => {
-    if (this.state.count === '' || this.state.count < 0) {
+    const { count, round, roundUnit, unit } = this.state;
+    const { onChange } = this.props;
+    if (count === null || count < 0) {
       return;
     }
-    this.props.onChange(toRelativeStringFromParts(this.state));
+    if (!onChange) {
+      return;
+    }
+    const date = toRelativeStringFromParts({
+      count,
+      round,
+      roundUnit,
+      unit,
+    });
+    onChange(date);
   };
 
   render() {
+    const { count, unit } = this.state;
     const relativeDateInputNumberDescriptionId = this.generateId();
-    const isInvalid = this.state.count < 0;
+    const isInvalid = count !== null && count < 0;
     const parsedValue = dateMath.parse(this.props.value, {
       roundUp: this.props.roundUp,
     });
@@ -94,7 +122,7 @@ export class EuiRelativeTab extends Component {
                 'euiRelativeTab.numberInputLabel',
               ]}
               defaults={['Must be >= 0', 'Time span amount']}>
-              {([numberInputError, numberInputLabel]) => (
+              {([numberInputError, numberInputLabel]: string[]) => (
                 <EuiFormRow
                   isInvalid={isInvalid}
                   error={isInvalid ? numberInputError : null}>
@@ -103,7 +131,7 @@ export class EuiRelativeTab extends Component {
                     aria-label={numberInputLabel}
                     aria-describedby={relativeDateInputNumberDescriptionId}
                     data-test-subj={'superDatePickerRelativeDateInputNumber'}
-                    value={this.state.count}
+                    value={count || undefined}
                     onChange={this.onCountChange}
                     isInvalid={isInvalid}
                   />
@@ -115,14 +143,14 @@ export class EuiRelativeTab extends Component {
             <EuiI18n
               token="euiRelativeTab.unitInputLabel"
               default="Relative time span">
-              {unitInputLabel => (
+              {(unitInputLabel: string) => (
                 <EuiSelect
                   compressed
                   aria-label={unitInputLabel}
                   data-test-subj={
                     'superDatePickerRelativeDateInputUnitSelector'
                   }
-                  value={this.state.unit}
+                  value={unit}
                   options={relativeOptions}
                   onChange={this.onUnitChange}
                 />
@@ -134,8 +162,8 @@ export class EuiRelativeTab extends Component {
         <EuiI18n
           token="euiRelativeTab.roundingLabel"
           default="Round to the {unit}"
-          values={{ unit: timeUnits[this.state.unit.substring(0, 1)] }}>
-          {roundingLabel => (
+          values={{ unit: timeUnits[unit.substring(0, 1) as TimeUnitId] }}>
+          {(roundingLabel: string) => (
             <EuiSwitch
               data-test-subj={'superDatePickerRelativeDateRoundSwitch'}
               label={roundingLabel}
@@ -160,12 +188,12 @@ export class EuiRelativeTab extends Component {
             </EuiFormLabel>
           }
         />
-        <EuiScreenReaderOnly id={relativeDateInputNumberDescriptionId}>
+        <EuiScreenReaderOnly>
           <p>
             <EuiI18n
               token="euiRelativeTab.fullDescription"
               default="The unit is changeable. Currently set to {unit}."
-              values={{ unit: this.state.unit }}
+              values={{ unit }}
             />
           </p>
         </EuiScreenReaderOnly>
@@ -173,12 +201,3 @@ export class EuiRelativeTab extends Component {
     );
   }
 }
-
-EuiRelativeTab.propTypes = {
-  dateFormat: PropTypes.string.isRequired,
-  locale: PropTypes.string,
-  value: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  roundUp: PropTypes.bool,
-  position: PropTypes.oneOf(['start', 'end']),
-};

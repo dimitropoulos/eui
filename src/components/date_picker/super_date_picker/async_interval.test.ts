@@ -14,11 +14,16 @@ describe('AsyncInterval', () => {
   // Advances time and awaits any pending promises after every 100ms
   // This helper makes it easier to advance time without worrying
   // whether tasks are still lingering on the event loop
-  async function andvanceTimerAndAwaitFn(instance, ms) {
-    const iterations = times(Math.floor(ms / 100));
-    const remainder = ms % 100;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async function andvanceTimerAndAwaitFn(
+    instance: AsyncInterval,
+    milliseconds: number
+  ) {
+    const iterations = times(Math.floor(milliseconds / 100));
+    const remainder = milliseconds % 100;
+    /* eslint-disable @typescript-eslint/no-unused-vars */
+    // @ts-ignore
     for (const item of iterations) {
+      /* eslint-enable @typescript-eslint/no-unused-vars */
       await instance.__pendingFn;
       jest.advanceTimersByTime(100);
       await instance.__pendingFn;
@@ -28,8 +33,8 @@ describe('AsyncInterval', () => {
   }
 
   describe('when creating a 1000ms interval', async () => {
-    let instance;
-    let spy;
+    let instance: AsyncInterval;
+    let spy: jest.Mock;
     beforeEach(() => {
       spy = jest.fn();
       instance = new AsyncInterval(spy, 1000);
@@ -65,8 +70,8 @@ describe('AsyncInterval', () => {
   });
 
   describe('when creating a 1000ms interval that calls a fn that takes 2000ms to complete', async () => {
-    let instance;
-    let spy;
+    let instance: AsyncInterval;
+    let spy: jest.Mock;
     beforeEach(() => {
       spy = jest.fn(async () => await sleep(2000));
       instance = new AsyncInterval(spy, 1000);

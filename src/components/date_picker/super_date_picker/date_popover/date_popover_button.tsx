@@ -1,13 +1,40 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, {
+  FunctionComponent,
+  ButtonHTMLAttributes,
+  MouseEventHandler,
+} from 'react';
 import classNames from 'classnames';
 
-import { EuiPopover } from '../../../popover';
+import { EuiPopover, EuiPopoverProps } from '../../../popover';
 
 import { formatTimeString } from '../pretty_duration';
-import { EuiDatePopoverContent } from './date_popover_content';
+import {
+  EuiDatePopoverContent,
+  EuiDatePopoverContentProps,
+} from './date_popover_content';
+import { LocaleSpecifier } from 'moment'; // eslint-disable-line import/named
 
-export function EuiDatePopoverButton(props) {
+export interface EuiDatePopoverButtonProps {
+  className?: string;
+  buttonProps?: ButtonHTMLAttributes<HTMLButtonElement>;
+  dateFormat: string;
+  isDisabled?: boolean;
+  isInvalid?: boolean;
+  isOpen: boolean;
+  needsUpdating?: boolean;
+  locale?: LocaleSpecifier;
+  onChange: EuiDatePopoverContentProps['onChange'];
+  onPopoverClose: EuiPopoverProps['closePopover'];
+  onPopoverToggle: MouseEventHandler<HTMLButtonElement>;
+  position: 'start' | 'end';
+  roundUp?: boolean;
+  timeFormat: string;
+  value: string;
+}
+
+export const EuiDatePopoverButton: FunctionComponent<
+  EuiDatePopoverButtonProps
+> = props => {
   const {
     position,
     isDisabled,
@@ -77,19 +104,6 @@ export function EuiDatePopoverButton(props) {
       />
     </EuiPopover>
   );
-}
-
-EuiDatePopoverButton.propTypes = {
-  position: PropTypes.oneOf(['start', 'end']),
-  isInvalid: PropTypes.bool,
-  isDisabled: PropTypes.bool,
-  needsUpdating: PropTypes.bool,
-  value: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  dateFormat: PropTypes.string.isRequired,
-  timeFormat: PropTypes.string.isRequired,
-  roundUp: PropTypes.bool,
-  isOpen: PropTypes.bool.isRequired,
-  onPopoverToggle: PropTypes.func.isRequired,
-  onPopoverClose: PropTypes.func.isRequired,
 };
+
+EuiDatePopoverButton.displayName = 'EuiDatePopoverButton';

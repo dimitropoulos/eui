@@ -12,7 +12,6 @@ exports[`EuiSuperDatePicker is rendered 1`] = `
       isDisabled={false}
       prepend={
         <EuiQuickSelectPopover
-          applyRefreshInterval={null}
           applyTime={[Function]}
           commonlyUsedRanges={
             Array [

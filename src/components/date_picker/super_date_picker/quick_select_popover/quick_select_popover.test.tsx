@@ -1,11 +1,14 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { EuiQuickSelectPopover } from './quick_select_popover';
+import {
+  EuiQuickSelectPopover,
+  EuiQuickSelectPopoverProps,
+} from './quick_select_popover';
 
 const noop = () => {};
 
-const defaultProps = {
+const defaultProps: EuiQuickSelectPopoverProps = {
   applyTime: noop,
   applyRefreshInterval: noop,
   start: 'now-15m',

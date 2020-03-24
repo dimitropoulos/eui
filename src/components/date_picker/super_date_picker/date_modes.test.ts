@@ -10,7 +10,7 @@ jest.mock('@elastic/datemath', () => {
   moment.now = () => offset + Date.now();
   return {
     ...datemath,
-    parse: (text, options) =>
+    parse: (text: string, options: any) =>
       datemath.parse(text, {
         forceNow: anchoredDate, // For `toAbsoluteString`
         momentInstance: moment, // For `toRelativeString`

@@ -1,12 +1,13 @@
 import dateMath from '@elastic/datemath';
-import moment from 'moment';
+import moment, { LocaleSpecifier } from 'moment'; // eslint-disable-line import/named
 import { timeUnits, timeUnitsPlural } from './time_units';
 import { getDateMode, DATE_MODES } from './date_modes';
 import { parseRelativeParts } from './relative_utils';
+import { DurationRange, TimeUnitId, ShortDate } from '../types';
 
 const ISO_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 
-export const commonDurationRanges = [
+export const commonDurationRanges: DurationRange[] = [
   { start: 'now/d', end: 'now/d', label: 'Today' },
   { start: 'now/w', end: 'now/w', label: 'This week' },
   { start: 'now/M', end: 'now/M', label: 'This month' },
@@ -17,13 +18,13 @@ export const commonDurationRanges = [
   { start: 'now/y', end: 'now', label: 'Year to date' },
 ];
 
-function cantLookup(timeFrom, timeTo, dateFormat) {
+function cantLookup(timeFrom: string, timeTo: string, dateFormat: string) {
   const displayFrom = formatTimeString(timeFrom, dateFormat);
   const displayTo = formatTimeString(timeTo, dateFormat, true);
   return `${displayFrom} to ${displayTo}`;
 }
 
-function isRelativeToNow(timeFrom, timeTo) {
+function isRelativeToNow(timeFrom: ShortDate, timeTo: ShortDate) {
   const fromDateMode = getDateMode(timeFrom);
   const toDateMode = getDateMode(timeTo);
   const isLast =
@@ -34,10 +35,10 @@ function isRelativeToNow(timeFrom, timeTo) {
 }
 
 export function formatTimeString(
-  timeString,
-  dateFormat,
+  timeString: string,
+  dateFormat: string,
   roundUp = false,
-  locale = 'en'
+  locale: LocaleSpecifier = 'en'
 ) {
   const timeAsMoment = moment(timeString, ISO_FORMAT, true);
   if (timeAsMoment.isValid()) {
@@ -56,7 +57,12 @@ export function formatTimeString(
   return timeString;
 }
 
-export function prettyDuration(timeFrom, timeTo, quickRanges = [], dateFormat) {
+export function prettyDuration(
+  timeFrom: ShortDate,
+  timeTo: ShortDate,
+  quickRanges: DurationRange[] = [],
+  dateFormat: string
+) {
   const matchingQuickRange = quickRanges.find(
     ({ start: quickFrom, end: quickTo }) => {
       return timeFrom === quickFrom && timeTo === quickTo;
@@ -76,14 +82,16 @@ export function prettyDuration(timeFrom, timeTo, quickRanges = [], dateFormat) {
       timeTense = 'Next';
       relativeParts = parseRelativeParts(timeTo);
     }
-    const countTimeUnit = relativeParts.unit.substring(0, 1);
+    const countTimeUnit = relativeParts.unit.substring(0, 1) as TimeUnitId;
     const countTimeUnitFullName =
       relativeParts.count > 1
         ? timeUnitsPlural[countTimeUnit]
         : timeUnits[countTimeUnit];
     let text = `${timeTense} ${relativeParts.count} ${countTimeUnitFullName}`;
     if (relativeParts.round) {
-      text += ` rounded to the ${timeUnits[relativeParts.roundUnit]}`;
+      if (relativeParts.roundUnit) {
+        text += ` rounded to the ${timeUnits[relativeParts.roundUnit]}`;
+      }
     }
     return text;
   }
@@ -91,7 +99,11 @@ export function prettyDuration(timeFrom, timeTo, quickRanges = [], dateFormat) {
   return cantLookup(timeFrom, timeTo, dateFormat);
 }
 
-export function showPrettyDuration(timeFrom, timeTo, quickRanges = []) {
+export function showPrettyDuration(
+  timeFrom: ShortDate,
+  timeTo: ShortDate,
+  quickRanges: DurationRange[] = []
+) {
   const matchingQuickRange = quickRanges.find(
     ({ start: quickFrom, end: quickTo }) => {
       return timeFrom === quickFrom && timeTo === quickTo;

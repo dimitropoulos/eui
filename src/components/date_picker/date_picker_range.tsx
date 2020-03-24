@@ -1,16 +1,46 @@
-import React, { cloneElement, Fragment } from 'react';
-import PropTypes from 'prop-types';
+import React, {
+  cloneElement,
+  Fragment,
+  FunctionComponent,
+  ReactElement,
+} from 'react';
 import classNames from 'classnames';
 
 import { EuiText } from '../text';
-import { EuiIcon } from '../icon';
+import { EuiIcon, IconType } from '../icon';
+import { CommonProps } from '../common';
+import { EuiDatePickerProps } from './date_picker';
 
-export const EuiDatePickerRange = ({
+export type EuiDatePickerRangeProps = CommonProps & {
+  /**
+   * The end date `EuiDatePicker` element
+   */
+  endDateControl: ReactElement<EuiDatePickerProps>;
+  fullWidth?: boolean;
+
+  /**
+   * Pass either an icon type or set to `false` to remove icon entirely
+   */
+  iconType?: boolean | IconType;
+
+  /**
+   * Won't apply any additional props to start and end date components
+   */
+  isCustom?: boolean;
+  readOnly?: boolean;
+
+  /**
+   * The start date `EuiDatePicker` element
+   */
+  startDateControl: ReactElement<EuiDatePickerProps>;
+};
+
+export const EuiDatePickerRange: FunctionComponent<EuiDatePickerRangeProps> = ({
   children,
   className,
   startDateControl,
   endDateControl,
-  iconType,
+  iconType = true,
   fullWidth,
   isCustom,
   readOnly,
@@ -74,35 +104,4 @@ export const EuiDatePickerRange = ({
       )}
     </div>
   );
-};
-
-EuiDatePickerRange.propTypes = {
-  /**
-   * The start date `EuiDatePicker` element
-   */
-  startDateControl: PropTypes.node.isRequired,
-  /**
-   * The end date `EuiDatePicker` element
-   */
-  endDateControl: PropTypes.node.isRequired,
-  /**
-   * Pass either an icon type or set to `false` to remove icon entirely
-   */
-  iconType: PropTypes.oneOfType([
-    PropTypes.bool,
-    PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
-  ]),
-  fullWidth: PropTypes.bool,
-  /**
-   * Won't apply any additional props to start and end date components
-   */
-  isCustom: PropTypes.bool,
-  /**
-   * Including any children will replace all innerds with the provided children
-   */
-  children: PropTypes.node,
-};
-
-EuiDatePickerRange.defaultProps = {
-  iconType: true,
 };

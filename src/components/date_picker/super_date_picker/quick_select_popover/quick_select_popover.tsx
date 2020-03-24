@@ -1,10 +1,4 @@
-import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
-import {
-  commonlyUsedRangeShape,
-  recentlyUsedRangeShape,
-  quickSelectPanelShape,
-} from '../types';
 
 import { EuiButtonEmpty } from '../../../button';
 import { EuiIcon } from '../../../icon';
@@ -18,9 +12,39 @@ import { EuiQuickSelect } from './quick_select';
 import { EuiCommonlyUsedTimeRanges } from './commonly_used_time_ranges';
 import { EuiRecentlyUsed } from './recently_used';
 import { EuiRefreshInterval } from './refresh_interval';
+import {
+  DurationRange,
+  ApplyRefreshInterval,
+  ApplyTime,
+  QuickSelect,
+  QuickSelectPanel,
+} from '../../types';
 
-export class EuiQuickSelectPopover extends Component {
-  state = {
+export interface EuiQuickSelectPopoverProps {
+  applyRefreshInterval?: ApplyRefreshInterval;
+  applyTime: ApplyTime;
+  commonlyUsedRanges: DurationRange[];
+  customQuickSelectPanels?: QuickSelectPanel[];
+  dateFormat: string;
+  end: string;
+  isAutoRefreshOnly?: boolean;
+  isDisabled?: boolean;
+  isPaused?: boolean;
+  recentlyUsedRanges?: DurationRange[];
+  refreshInterval: number;
+  start: string;
+}
+
+interface EuiQuickSelectPopoverState {
+  isOpen: boolean;
+  prevQuickSelect?: QuickSelect;
+}
+
+export class EuiQuickSelectPopover extends Component<
+  EuiQuickSelectPopoverProps,
+  EuiQuickSelectPopoverState
+> {
+  state: EuiQuickSelectPopoverState = {
     isOpen: false,
   };
 
@@ -34,7 +58,12 @@ export class EuiQuickSelectPopover extends Component {
     }));
   };
 
-  applyTime = ({ start, end, quickSelect, keepPopoverOpen = false }) => {
+  applyTime: ApplyTime = ({
+    start,
+    end,
+    quickSelect,
+    keepPopoverOpen = false,
+  }) => {
     this.props.applyTime({
       start,
       end,
@@ -141,18 +170,3 @@ export class EuiQuickSelectPopover extends Component {
     );
   }
 }
-
-EuiQuickSelectPopover.propTypes = {
-  applyTime: PropTypes.func.isRequired,
-  start: PropTypes.string.isRequired,
-  end: PropTypes.string.isRequired,
-  applyRefreshInterval: PropTypes.func,
-  isDisabled: PropTypes.bool.isRequired,
-  isPaused: PropTypes.bool.isRequired,
-  refreshInterval: PropTypes.number.isRequired,
-  commonlyUsedRanges: PropTypes.arrayOf(commonlyUsedRangeShape).isRequired,
-  dateFormat: PropTypes.string.isRequired,
-  recentlyUsedRanges: PropTypes.arrayOf(recentlyUsedRangeShape).isRequired,
-  isAutoRefreshOnly: PropTypes.bool.isRequired,
-  customQuickSelectPanels: PropTypes.arrayOf(quickSelectPanelShape),
-};

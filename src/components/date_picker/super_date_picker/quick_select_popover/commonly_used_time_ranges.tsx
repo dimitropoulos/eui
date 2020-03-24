@@ -1,32 +1,36 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { commonlyUsedRangeShape } from '../types';
+import React, { FunctionComponent } from 'react';
 import { EuiI18n } from '../../../i18n';
 import { EuiFlexGrid, EuiFlexItem } from '../../../flex';
 import { EuiTitle } from '../../../title';
 import { EuiLink } from '../../../link';
 import { EuiHorizontalRule } from '../../../horizontal_rule';
 import { htmlIdGenerator } from '../../../../services';
+import { DurationRange, ApplyTime } from '../../types';
 
 const generateId = htmlIdGenerator();
 
-export function EuiCommonlyUsedTimeRanges({ applyTime, commonlyUsedRanges }) {
+export interface EuiCommonlyUsedTimeRangesProps {
+  applyTime: ApplyTime;
+  commonlyUsedRanges: DurationRange[];
+}
+
+export const EuiCommonlyUsedTimeRanges: FunctionComponent<
+  EuiCommonlyUsedTimeRangesProps
+> = ({ applyTime, commonlyUsedRanges }) => {
   const legendId = generateId();
   const links = commonlyUsedRanges.map(({ start, end, label }) => {
     const applyCommonlyUsed = () => {
       applyTime({ start, end });
     };
+    const dataTestSubj = label
+      ? `superDatePickerCommonlyUsed_${label.replace(' ', '_')}`
+      : undefined;
     return (
       <EuiFlexItem
         key={label}
         component="li"
         className="euiCommonlyUsedTimeRanges__item">
-        <EuiLink
-          onClick={applyCommonlyUsed}
-          data-test-subj={`superDatePickerCommonlyUsed_${label.replace(
-            ' ',
-            '_'
-          )}`}>
+        <EuiLink onClick={applyCommonlyUsed} data-test-subj={dataTestSubj}>
           {label}
         </EuiLink>
       </EuiFlexItem>
@@ -57,9 +61,6 @@ export function EuiCommonlyUsedTimeRanges({ applyTime, commonlyUsedRanges }) {
       <EuiHorizontalRule margin="s" />
     </fieldset>
   );
-}
-
-EuiCommonlyUsedTimeRanges.propTypes = {
-  applyTime: PropTypes.func.isRequired,
-  commonlyUsedRanges: PropTypes.arrayOf(commonlyUsedRangeShape).isRequired,
 };
+
+EuiCommonlyUsedTimeRanges.displayName = 'EuiCommonlyUsedTimeRanges';
