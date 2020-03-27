@@ -38,7 +38,7 @@ export interface EuiRelativeTabProps {
 
 interface EuiRelativeTabState
   extends Pick<RelativeParts, 'unit' | 'round' | 'roundUnit'> {
-  count: number | null;
+  count: number | undefined;
   sentenceCasedPosition: string;
 }
 
@@ -57,7 +57,7 @@ export class EuiRelativeTab extends Component<
     const sanitizedValue = parseInt(event.target.value, 10);
     this.setState(
       {
-        count: isNaN(sanitizedValue) ? null : sanitizedValue,
+        count: isNaN(sanitizedValue) ? undefined : sanitizedValue,
       },
       this.handleChange
     );
@@ -84,7 +84,7 @@ export class EuiRelativeTab extends Component<
   handleChange = () => {
     const { count, round, roundUnit, unit } = this.state;
     const { onChange } = this.props;
-    if (count === null || count < 0) {
+    if (count === undefined || count < 0) {
       return;
     }
     const date = toRelativeStringFromParts({
@@ -99,7 +99,7 @@ export class EuiRelativeTab extends Component<
   render() {
     const { count, unit } = this.state;
     const relativeDateInputNumberDescriptionId = this.generateId();
-    const isInvalid = count !== null && count < 0;
+    const isInvalid = count !== undefined && count < 0;
     const parsedValue = dateMath.parse(this.props.value, {
       roundUp: this.props.roundUp,
     });
@@ -128,7 +128,7 @@ export class EuiRelativeTab extends Component<
                     aria-label={numberInputLabel}
                     aria-describedby={relativeDateInputNumberDescriptionId}
                     data-test-subj={'superDatePickerRelativeDateInputNumber'}
-                    value={count || undefined}
+                    value={count}
                     onChange={this.onCountChange}
                     isInvalid={isInvalid}
                   />
