@@ -99,7 +99,7 @@ export class EuiRelativeTab extends Component<
   render() {
     const { count, unit } = this.state;
     const relativeDateInputNumberDescriptionId = this.generateId();
-    const isInvalid = count !== undefined && count < 0;
+    const isInvalid = count === undefined || count < 0;
     const parsedValue = dateMath.parse(this.props.value, {
       roundUp: this.props.roundUp,
     });
