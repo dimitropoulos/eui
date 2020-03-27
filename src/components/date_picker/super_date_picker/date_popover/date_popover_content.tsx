@@ -23,7 +23,7 @@ export interface EuiDatePopoverContentProps {
   dateFormat: string;
   timeFormat: string;
   locale?: LocaleSpecifier;
-  position: 'start' | 'end';
+  position?: 'start' | 'end';
 }
 
 export const EuiDatePopoverContent: FunctionComponent<

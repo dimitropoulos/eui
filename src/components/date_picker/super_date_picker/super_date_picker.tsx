@@ -399,7 +399,7 @@ export class EuiSuperDatePicker extends Component<
             startDateControl={
               <EuiDatePopoverButton
                 className="euiSuperDatePicker__startPopoverButton"
-                position="start"
+                position="start" // <- this makes me think that it's not intended to be `undefined`, anyway
                 needsUpdating={hasChanged}
                 isInvalid={isInvalid}
                 isDisabled={isDisabled}
@@ -415,7 +415,7 @@ export class EuiSuperDatePicker extends Component<
             }
             endDateControl={
               <EuiDatePopoverButton
-                position="end"
+                position="end" // <- this makes me think that it's not intended to be `undefined`, anyway
                 needsUpdating={hasChanged}
                 isInvalid={isInvalid}
                 isDisabled={isDisabled}

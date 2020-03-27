@@ -16,7 +16,7 @@ export interface EuiAbsoluteTabProps {
   value: string;
   onChange: NonNullable<ReactDatePickerProps['onChange']>;
   roundUp: boolean;
-  position: 'start' | 'end';
+  position?: 'start' | 'end';
 }
 
 interface EuiAbsoluteTabState {
@@ -35,7 +35,7 @@ export class EuiAbsoluteTab extends Component<
   constructor(props: EuiAbsoluteTabProps) {
     super(props);
 
-    const sentenceCasedPosition = toSentenceCase(props.position);
+    const sentenceCasedPosition = toSentenceCase(props.position || '');
 
     const parsedValue = dateMath.parse(props.value, { roundUp: props.roundUp });
     const valueAsMoment =

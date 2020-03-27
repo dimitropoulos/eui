@@ -26,7 +26,7 @@ export interface EuiDatePopoverButtonProps {
   onChange: EuiDatePopoverContentProps['onChange'];
   onPopoverClose: EuiPopoverProps['closePopover'];
   onPopoverToggle: MouseEventHandler<HTMLButtonElement>;
-  position: 'start' | 'end';
+  position?: 'start' | 'end';
   roundUp?: boolean;
   timeFormat: string;
   value: string;
@@ -55,7 +55,7 @@ export const EuiDatePopoverButton: FunctionComponent<
 
   const classes = classNames([
     'euiDatePopoverButton',
-    `euiDatePopoverButton--${position}`,
+    `euiDatePopoverButton--${position}`, // <- this makes me think that `undefined` should not allowed
     {
       'euiDatePopoverButton-isSelected': isOpen,
       'euiDatePopoverButton-isInvalid': isInvalid,
@@ -77,7 +77,7 @@ export const EuiDatePopoverButton: FunctionComponent<
       className={classes}
       title={title}
       disabled={isDisabled}
-      data-test-subj={`superDatePicker${position}DatePopoverButton`}
+      data-test-subj={`superDatePicker${position}DatePopoverButton`} // <- this makes me think that `undefined` should not allowed
       {...buttonProps}>
       {formatTimeString(value, dateFormat, roundUp, locale)}
     </button>

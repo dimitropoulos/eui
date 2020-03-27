@@ -33,7 +33,7 @@ export interface EuiRelativeTabProps {
   value: string;
   onChange: NonNullable<ReactDatePickerProps['onChange']>;
   roundUp?: boolean;
-  position: 'start' | 'end';
+  position?: 'start' | 'end';
 }
 
 interface EuiRelativeTabState
@@ -48,7 +48,7 @@ export class EuiRelativeTab extends Component<
 > {
   state: EuiRelativeTabState = {
     ...parseRelativeParts(this.props.value),
-    sentenceCasedPosition: toSentenceCase(this.props.position),
+    sentenceCasedPosition: toSentenceCase(this.props.position || ''),
   };
 
   generateId = htmlIdGenerator();

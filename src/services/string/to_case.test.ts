@@ -1,6 +1,10 @@
 import { toSentenceCase } from './to_case';
 
 describe('toSentenceCase', () => {
+  it('should return an empty string when given an empty string', () => {
+    expect(toSentenceCase('')).toBe('');
+  });
+
   it("should return the same single word with the first letter capitalized for 'single'", () => {
     expect(toSentenceCase('single')).toBe('Single');
   });
